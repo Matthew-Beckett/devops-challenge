@@ -11,5 +11,6 @@ inputs = {
     user_password = "postgres"
     zone = "europe-west2-a"
     region = "europe-west2"
+    deletion_protection=false
     database_version = "POSTGRES_13"
 }
