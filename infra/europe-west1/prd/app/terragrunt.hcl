@@ -33,5 +33,6 @@ inputs = merge(
         vpc_connector_ip_cidr_range = "10.13.0.0/28"
         source_path = "${get_terragrunt_dir()}/../../../../test-app"
         pgsql_host = dependency.postgresql.outputs.private_ip_address
+        gcs_source_bucket_name = "faceit-test-app-source-bucket-${local.level_config.inputs.promotion_level}"
     }
 )
