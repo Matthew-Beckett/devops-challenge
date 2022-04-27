@@ -43,11 +43,6 @@ This project utilises Terragrunt to allow for DRY configuration of all Terraform
 │   └── root.hcl
 └── test-app
     ├── README.md
-    ├── docs
-    │   ├── infrastructure
-    │   ├── terraform
-    │   └── terragrunt
-    │       └── folder_structure.md
     ├── function.go
     ├── go.mod
     ├── go.sum
