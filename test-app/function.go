@@ -1,4 +1,4 @@
-package main
+package function
 
 import (
 	"context"
@@ -29,22 +29,16 @@ func (cfg *AppConfig) GetPostgresDSN() string {
 	)
 }
 
-func main() {
-	if err := run(); err != nil {
-		logrus.WithError(err).Fatalf("error running application")
-	}
-}
-
-func run() error {
+func HealthHandler(res http.ResponseWriter, req *http.Request) {
 	cfg := new(AppConfig)
 	if err := envconfig.Process("", cfg); err != nil {
-		return fmt.Errorf("failed to process environment variables: %w", err)
+		logrus.Errorf("failed to process environment variables: %w", err)
 	}
 
 	// sql.Open doesn't actually attempt to connect to the database
 	db, err := sql.Open("postgres", cfg.GetPostgresDSN())
 	if err != nil {
-		return fmt.Errorf("cannot connect to %s with error: %s", cfg.PostgresHost, err)
+		logrus.Errorf("cannot connect to %s with error: %s", cfg.PostgresHost, err)
 	}
 	defer db.Close()
 
@@ -52,29 +46,18 @@ func run() error {
 	defer cancel()
 	// we need to run a ping to make sure that to connect to the database is successful.
 	if err := db.PingContext(ctx); err != nil {
-		return fmt.Errorf("failed to connect to postgres on startup of the application: %w", err)
+		logrus.Errorf("failed to connect to postgres on startup of the application: %w", err)
 	}
 
-	// register the health endpoint
-	http.HandleFunc("/health", func(res http.ResponseWriter, req *http.Request) {
-		logrus.Info("got request for /health endpoint")
-		// run a ping against the database
-		if err := db.PingContext(req.Context()); err != nil {
-			logrus.WithError(err).Error("error running ping command against postgres")
-			res.WriteHeader(http.StatusInternalServerError)
-			_, _ = fmt.Fprintf(res, "DOWN\n")
-			return
-		}
-		logrus.Info("health endpoint is ok")
-		res.WriteHeader(http.StatusOK)
-		_, _ = fmt.Fprintf(res, "UP\n")
-	})
-
-	// listen and serve
-	addr := fmt.Sprintf(":%d", cfg.Port)
-	logrus.Infof("attempting to start application on %s", addr)
-	if err := http.ListenAndServe(addr, nil); err != nil {
-		return fmt.Errorf("failed to start http server: %w", err)
+	logrus.Info("got request for /health endpoint")
+	// run a ping against the database
+	if err := db.PingContext(req.Context()); err != nil {
+		logrus.WithError(err).Error("error running ping command against postgres")
+		res.WriteHeader(http.StatusInternalServerError)
+		_, _ = fmt.Fprintf(res, "DOWN\n")
+		return
 	}
-	return nil
+	logrus.Info("health endpoint is ok")
+	res.WriteHeader(http.StatusOK)
+	_, _ = fmt.Fprintf(res, "UP\n")
 }
