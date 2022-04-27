@@ -1,6 +1,6 @@
 ## Scaling up FaceIT Test App for Large Scale User Base
 
-As this application resides within serverless the two biggest bottleknecks of this app are the VM instances which handle the VPC peering connection for private SQL communication as well as the SQL database cluster it's self which by default only has a single node.
+As this application resides within serverless the two biggest bottlenecks of this app are the VM instances which handle the VPC peering connection for private SQL communication as well as the SQL database cluster it's self which by default only has a single node.
 
 In a scale out event it is simple and easy to change these values via the following properties:
 
