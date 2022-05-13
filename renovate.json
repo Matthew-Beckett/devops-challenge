@@ -5,4 +5,5 @@
   "terragrunt": {
     "fileMatch": ["(^|/)*\.hcl$"]
   }
+  "enabledMangers": ["terragrunt"]
 }
