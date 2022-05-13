@@ -3,6 +3,6 @@
     "config:base"
   ],
   "terragrunt": {
-    "fileMatch": ["(^|/).hcl$"]
+    "fileMatch": ["(^|/)*\.hcl$"]
   }
 }
